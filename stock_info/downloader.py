@@ -59,7 +59,7 @@ class Downloader:
         self.enable_fake = "true" == os.environ.get("FAKE_DOWNLOADER", "false")
         logger.info(f"is-fake-enabled: {self.enable_fake}")
 
-    def download(self, key: str):
+    def download(self, key: str) -> Result:
         text = None
         if self.enable_fake:
             text = self.use_previous_data(key)
