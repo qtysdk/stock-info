@@ -14,15 +14,7 @@ jobs:
       - name: Set up Python 3.10
         uses: actions/setup-python@v2
         with:
-          python-version: 3.10
-      - name: Check environment variables
-        run: |
-          [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ] && echo "AWS_ACCESS_KEY_ID is not set." && exit 1
-          [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ] && echo "AWS_SECRET_ACCESS_KEY is not set." && exit 1
-          [ -z "${{ secrets.AWS_DEFAULT_REGION }}" ] && echo "AWS_DEFAULT_REGION is not set." && exit 1
-          [ -z "${{ secrets.TARGET_S3_BUCKET }}" ] && echo "TARGET_S3_BUCKET is not set." && exit 1
-          [ -z "${{ secrets.TARGET_S3_KEY }}" ] && echo "TARGET_S3_KEY is not set." && exit 1
-          [ -z "${{ secrets.TARGET_LAMBDA_FUNCTION }}" ] && echo "TARGET_LAMBDA_FUNCTION is not set." && exit 1
+          python-version: "3.10"
 
       - name: Package and deploy
         env:
@@ -33,6 +25,13 @@ jobs:
           TARGET_S3_KEY: ${{ secrets.TARGET_S3_KEY }}
           TARGET_LAMBDA_FUNCTION: ${{ secrets.TARGET_LAMBDA_FUNCTION }}
         run: |
+          [ -z "${AWS_ACCESS_KEY_ID}" ] && echo "AWS_ACCESS_KEY_ID is not set." && exit 1
+          [ -z "${AWS_SECRET_ACCESS_KEY}" ] && echo "AWS_SECRET_ACCESS_KEY is not set." && exit 1
+          [ -z "${AWS_DEFAULT_REGION}" ] && echo "AWS_DEFAULT_REGION is not set." && exit 1
+          [ -z "${TARGET_S3_BUCKET}" ] && echo "TARGET_S3_BUCKET is not set." && exit 1
+          [ -z "${TARGET_S3_KEY}" ] && echo "TARGET_S3_KEY is not set." && exit 1
+          [ -z "${TARGET_LAMBDA_FUNCTION}" ] && echo "TARGET_LAMBDA_FUNCTION is not set." && exit 1
+
           ./pack-for-lambda.sh
           aws s3 cp output.zip s3://${TARGET_S3_BUCKET}/${TARGET_S3_KEY}
           aws lambda update-function-code --function-name ${TARGET_LAMBDA_FUNCTION} --s3-bucket ${TARGET_S3_BUCKET} --s3-key ${TARGET_S3_KEY}
