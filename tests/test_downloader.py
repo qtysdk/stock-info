@@ -14,6 +14,17 @@ def test_fetch_0056(downloader: Downloader):
     )
 
 
+def test_fetch_00713(downloader: Downloader):
+    result = downloader.download("00713")
+    assert result == Result(
+        success=True,
+        stock_number="00713",
+        dividend=0.88,
+        exDividendDate="2024/03/18",
+        dividendPaymentDate=" ",
+    )
+
+
 def test_fetch_00878(downloader: Downloader):
     with pytest.raises(ValueError) as exec_info:
         downloader.download("00878")
