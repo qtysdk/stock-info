@@ -1,0 +1,1 @@
+This project is a mini-project designed to collect stock information from listed companies in Taiwan, focusing primarily on the schedule of stock dividends and distributions. It utilizes a serverless approach, providing functions for use by other services.
