@@ -32,6 +32,10 @@ jobs:
           [ -z "${TARGET_S3_KEY}" ] && echo "TARGET_S3_KEY is not set." && exit 1
           [ -z "${TARGET_LAMBDA_FUNCTION}" ] && echo "TARGET_LAMBDA_FUNCTION is not set." && exit 1
 
+          # Patch version
+          echo "${GITHUB_REF:11}" > ./stock_info/VERSION
+          
+          # Package
           ./pack-for-lambda.sh
           aws s3 cp output.zip s3://${TARGET_S3_BUCKET}/${TARGET_S3_KEY}
           aws lambda update-function-code --function-name ${TARGET_LAMBDA_FUNCTION} --s3-bucket ${TARGET_S3_BUCKET} --s3-key ${TARGET_S3_KEY}
