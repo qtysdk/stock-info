@@ -21,5 +21,6 @@ def test_fetch_00878(downloader: Downloader):
 
 
 def test_fetch_non_exists(downloader: Downloader):
-    result = downloader.download("C8763")
-    assert result == build_failed_result("C8763")
+    with pytest.raises(ValueError) as exec_info:
+        downloader.download("C8763")
+    assert exec_info.match("curl_command_not_found")
