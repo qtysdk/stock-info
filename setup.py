@@ -19,13 +19,10 @@ setup(
     author="qrtt1",
     author_email="chingyichan.tw@gmail.com",
     packages=find_packages(),
-    install_requires=[
-        # 列出這個套件需要依賴的其他套件
-        # 例如: 'requests>=2.25.1',
-        # 'pandas>=1.2.0',
-    ],
+    install_requires=["requests"],
     extras_require={
         "dev": [
+            "pytest",
             "black",
             "isort",
         ]
