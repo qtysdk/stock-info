@@ -28,6 +28,8 @@ class RequestParameters:
 
 
 def create_request_parameters_from_curl_command(curl_command: str) -> RequestParameters:
+    if curl_command is None:
+        raise ValueError("curl_command_not_found")
     lines = re.findall(r"(curl|-H) '([^']+)'.*", curl_command)
     url = None
     headers = dict()
