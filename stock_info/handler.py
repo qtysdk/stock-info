@@ -26,7 +26,4 @@ def callback(event, context):
     try:
         return build_lambda_result(dl.download(stock_number))
     except BaseException as e:
-        stack_info = "".join(
-            traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)
-        )
-        return build_lambda_result(build_failed_result(stock_number), stack_info)
+        return build_lambda_result(build_failed_result(stock_number), str(e))
