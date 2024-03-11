@@ -25,16 +25,23 @@ class Result:
 class RequestParameters:
     url: str
     headers: Dict
+    method: str
+    body: str | None
 
 
 def create_request_parameters_from_curl_command(curl_command: str) -> RequestParameters:
     if curl_command is None:
         raise ValueError("curl_command_not_found")
-    lines = re.findall(r"(curl|-H) '([^']+)'.*", curl_command)
+    lines = re.findall(r"(curl|-H|--data-raw) '([^']+)'.*", curl_command)
     url = None
     headers = dict()
+    method = "GET"
+    body = None
     for line in lines:
         data_type, value = line
+        if data_type == "--data-raw":
+            method = "POST"
+            body = value
         if data_type == "curl":
             url = value
         if data_type == "-H":
@@ -42,7 +49,7 @@ def create_request_parameters_from_curl_command(curl_command: str) -> RequestPar
             if parsed:
                 header_name, header_value = parsed[0]
                 headers[header_name] = header_value
-    return RequestParameters(url=url, headers=headers)
+    return RequestParameters(url=url, headers=headers, method=method, body=body)
 
 
 def build_failed_result(key: str):
@@ -99,4 +106,10 @@ class Downloader:
         params = create_request_parameters_from_curl_command(
             find_request_template(stock_number)
         )
-        return requests.get(params.url, headers=params.headers).text
+        if params.method == "GET":
+            return requests.get(params.url, headers=params.headers).text
+        if params.method == "POST":
+            return requests.post(
+                params.url, data=params.body, headers=params.headers
+            ).text
+        raise ValueError(f"Unsupported method {params.method}")
