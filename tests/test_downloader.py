@@ -37,9 +37,14 @@ def test_fetch_006208(downloader: Downloader):
 
 
 def test_fetch_00878(downloader: Downloader):
-    with pytest.raises(ValueError) as exec_info:
-        downloader.download("00878")
-    assert exec_info.match("curl_command_not_found")
+    result = downloader.download("00878")
+    assert result == Result(
+        success=True,
+        stock_number="00878",
+        dividend=0.4,
+        exDividendDate="2024/02/27",
+        dividendPaymentDate="2024/03/25",
+    )
 
 
 def test_fetch_non_exists(downloader: Downloader):

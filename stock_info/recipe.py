@@ -67,6 +67,28 @@ curl 'https://www.fubon.com/asset-management/fund/info/Json/FundDividendData' \
   --data-raw 'Fd=40&sDate=2023%2F03%2F12&eDate=2026%2F03%2F12'
 """  # TODO hardcode the end date to 2026
 
+_registered_curl_commands[
+    "00878"
+] = r"""
+curl 'https://cwapi.cathaysite.com.tw/api/Fund/GetHistoryAllotInfo?fundCode=CN&IsFromBorn=true&StartYear=&EndYear=&CurrentPage=1&PerPageCount=9999' \
+  -H 'Accept: application/json, text/plain, */*' \
+  -H 'Accept-Language: en-US,en;q=0.9,zh-TW;q=0.8,zh-CN;q=0.7,zh;q=0.6' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -H 'Content-Type: application/json' \
+  -H 'Origin: https://www.cathaysite.com.tw' \
+  -H 'Pragma: no-cache' \
+  -H 'Referer: https://www.cathaysite.com.tw/' \
+  -H 'Sec-Fetch-Dest: empty' \
+  -H 'Sec-Fetch-Mode: cors' \
+  -H 'Sec-Fetch-Site: same-site' \
+  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' \
+  -H 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxNDk4MTM0IiwidW5pcXVlX25hbWUiOiIiLCJyb2xlIjoiMCIsIkVDSUQiOiIwIiwibmJmIjoxNzEwMTc1Mjg0LCJleHAiOjE3NzAxNzUyMjQsImlhdCI6MTcxMDE3NTI4NH0.aNhFnHi_rAAIN-jUJCOlFFe2_Vss-NdI3A3JWVl8O1M' \
+  -H 'sec-ch-ua: "Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"'
+"""  # TODO the jwt token will expire after 2026
+
 
 def find_request_template(stock_number: str) -> str:
     return _registered_curl_commands.get(stock_number)
@@ -122,9 +144,24 @@ def _parser_fubon(stock_number: str, text: str):
     )
 
 
+def _parser_cathaysite(stock_number: str, text: str):
+    from stock_info.downloader import Result
+
+    data = json.loads(text)
+    data = data["result"]["fundAllotInfoList"][0]
+    return Result(
+        success=True,
+        stock_number=stock_number,
+        dividend=data["allotMoney"],
+        exDividendDate=data["transDate"],
+        dividendPaymentDate=data["lendingDate"],
+    )
+
+
 _registered_parsers["0056"] = _parser_yuantafunds
 _registered_parsers["00713"] = _parser_yuantafunds
 _registered_parsers["006208"] = _parser_fubon
+_registered_parsers["00878"] = _parser_cathaysite
 
 
 def find_parser(stock_number: str) -> Callable[[str, str], Any]:
