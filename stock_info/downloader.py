@@ -32,7 +32,7 @@ class RequestParameters:
 def create_request_parameters_from_curl_command(curl_command: str) -> RequestParameters:
     if curl_command is None:
         raise ValueError("curl_command_not_found")
-    lines = re.findall(r"(curl|-H|--data-raw) '([^']+)'.*", curl_command)
+    lines = re.findall(r"(curl|-H|--data-raw|-X) '([^']+)'.*", curl_command)
     url = None
     headers = dict()
     method = "GET"
@@ -42,6 +42,8 @@ def create_request_parameters_from_curl_command(curl_command: str) -> RequestPar
         if data_type == "--data-raw":
             method = "POST"
             body = value
+        if data_type == "-X":
+            method = str(value).upper()
         if data_type == "curl":
             url = value
         if data_type == "-H":
