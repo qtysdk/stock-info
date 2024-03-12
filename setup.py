@@ -19,10 +19,11 @@ setup(
     author="qrtt1",
     author_email="chingyichan.tw@gmail.com",
     packages=find_packages(),
-    install_requires=["requests", "beautifulsoup4"],
+    install_requires=["requests", "beautifulsoup4", "boto3"],
     extras_require={
         "dev": [
             "pytest",
+            "pytest-dotenv",
             "black",
             "isort",
         ]
