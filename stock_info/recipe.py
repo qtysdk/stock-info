@@ -89,6 +89,29 @@ curl 'https://cwapi.cathaysite.com.tw/api/Fund/GetHistoryAllotInfo?fundCode=CN&I
   -H 'sec-ch-ua-platform: "macOS"'
 """  # TODO the jwt token will expire after 2026
 
+_registered_curl_commands[
+    "00919"
+] = r"""
+curl 'https://www.capitalfund.com.tw/CFWeb/api/etf/dividendData3/195' \
+  -X 'POST' \
+  -H 'authority: www.capitalfund.com.tw' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: en-US,en;q=0.9,zh-TW;q=0.8,zh-CN;q=0.7,zh;q=0.6' \
+  -H 'cache-control: no-cache' \
+  -H 'content-length: 0' \
+  -H 'cookie: visid_incap_2932320=o3BJNXQmTcOpAwG+m9t5fg/B72UAAAAAQUIPAAAAAABv7VIjwkPmMfcBNTKvGWX7; incap_ses_933_2932320=ctHEDDA9zncjkzdLqK/yDA/B72UAAAAAPoOPrCIQb5jgloeueKwKHg==; nlbi_2932320=p3ytGrxDSlxU6wztVMy66wAAAABHmCnyZ1x2BNR7lKTUJzsZ; _gcl_au=1.1.801827870.1710211344; _gid=GA1.3.2087569856.1710211344; tr_uid=vbV6XnVWFioTfDmst6Rb5Q; oid=%257B%2522oid%2522%253A%2522285ab476-e01a-11ee-8d99-0242ac130002%2522%252C%2522_oldoid%2522%253A%2522285ab461-e01a-11ee-8d99-0242ac130002%2522%252C%2522ts%2522%253A-62135596800%252C%2522v%2522%253A%252220201118%2522%257D; _gat_UA-64516633-1=1; _ga=GA1.1.1426833675.1710211344; _ga_VN37CHZ283=GS1.1.1710211344.1.1.1710211495.60.0.0; _uetsid=284ddc60e01a11eeb0f9bb2865f6d61e; _uetvid=284dff20e01a11eea969b9d7f1aefcd0' \
+  -H 'origin: https://www.capitalfund.com.tw' \
+  -H 'pragma: no-cache' \
+  -H 'referer: https://www.capitalfund.com.tw/etf/product/detail/195/interest' \
+  -H 'sec-ch-ua: "Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+"""
+
 
 def find_request_template(stock_number: str) -> str:
     return _registered_curl_commands.get(stock_number)
@@ -158,11 +181,37 @@ def _parser_cathaysite(stock_number: str, text: str):
     )
 
 
+def _parser_capitalfund(stock_number: str, text: str):
+    from stock_info.downloader import Result
+
+    data = json.loads(text)
+    data = data["data"][0]
+    return Result(
+        success=True,
+        stock_number=stock_number,
+        dividend=float(data["amt"]),
+        exDividendDate=data["interestDate"],
+        dividendPaymentDate=data["assignDate"],
+    )
+
+
 _registered_parsers["0056"] = _parser_yuantafunds
 _registered_parsers["00713"] = _parser_yuantafunds
 _registered_parsers["006208"] = _parser_fubon
 _registered_parsers["00878"] = _parser_cathaysite
+_registered_parsers["00919"] = _parser_capitalfund
 
 
 def find_parser(stock_number: str) -> Callable[[str, str], Any]:
-    return _registered_parsers.get(stock_number)
+    def _parser_noop(stock_number: str, text: str):
+        from stock_info.downloader import Result
+
+        return Result(
+            success=True,
+            stock_number=stock_number,
+            dividend=0,
+            exDividendDate="noop",
+            dividendPaymentDate="noop",
+        )
+
+    return _registered_parsers.get(stock_number, _parser_noop)
