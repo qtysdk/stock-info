@@ -5,6 +5,15 @@ _registered_curl_commands = dict()
 _registered_parsers: Dict[str, Callable[[str, str], Any]] = dict()
 
 
+from datetime import datetime, timedelta
+
+
+def dates_between_today_and_last_year():
+    today = datetime.now()
+    one_year_ago = today - timedelta(days=365)
+    return one_year_ago.strftime("%Y/%m/%d"), today.strftime("%Y/%m/%d")
+
+
 _registered_curl_commands[
     "0056"
 ] = r"""
@@ -112,6 +121,14 @@ curl 'https://www.capitalfund.com.tw/CFWeb/api/etf/dividendData3/195' \
   -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
 """
 
+date_00929_start, date_00929_end = dates_between_today_and_last_year()
+
+_registered_curl_commands[
+    "00929"
+] = rf"""
+curl 'https://www.fhtrust.com.tw/api/fundDividend?m=fund&fundID=ETF21&sDate={date_00929_start}&eDate={date_00929_end}&dateType=divDate&ec001=3'
+"""
+
 
 def find_request_template(stock_number: str) -> str:
     return _registered_curl_commands.get(stock_number)
@@ -195,11 +212,26 @@ def _parser_capitalfund(stock_number: str, text: str):
     )
 
 
+def _parser_fhtrust(stock_number: str, text: str):
+    from stock_info.downloader import Result
+
+    data = json.loads(text)
+    data = data["result"][0]["dividend"][0]
+    return Result(
+        success=True,
+        stock_number=stock_number,
+        dividend=float(data["mDiv"]),
+        exDividendDate=data["divDate"],
+        dividendPaymentDate=data["grantDate"],
+    )
+
+
 _registered_parsers["0056"] = _parser_yuantafunds
 _registered_parsers["00713"] = _parser_yuantafunds
 _registered_parsers["006208"] = _parser_fubon
 _registered_parsers["00878"] = _parser_cathaysite
 _registered_parsers["00919"] = _parser_capitalfund
+_registered_parsers["00929"] = _parser_fhtrust
 
 
 def find_parser(stock_number: str) -> Callable[[str, str], Any]:

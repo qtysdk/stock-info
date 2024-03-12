@@ -58,6 +58,17 @@ def test_fetch_00919(downloader: Downloader):
     )
 
 
+def test_fetch_00929(downloader: Downloader):
+    result = downloader.download("00929")
+    assert result == Result(
+        success=True,
+        stock_number="00929",
+        dividend=0.13,
+        exDividendDate="2024/02/29",
+        dividendPaymentDate="2024/03/26",
+    )
+
+
 def test_fetch_non_exists(downloader: Downloader):
     with pytest.raises(ValueError) as exec_info:
         downloader.download("C8763")
