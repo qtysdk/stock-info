@@ -9,7 +9,7 @@ dl = Downloader()
 
 
 def build_lambda_result(result: Result, stack_info: str = None):
-    if stack_info is None:
+    if stack_info is not None:
         return dict(version=get_version(), result=asdict(result), stack_info=stack_info)
 
     return dict(version=get_version(), result=asdict(result))
