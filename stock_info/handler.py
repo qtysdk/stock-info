@@ -39,6 +39,7 @@ def callback(event, context):
 def download_or_get_from_cache(stock_number) -> Result:
     cached: Dict = cache.get_item(stock_number)
     if cached:
+        logger.info(f"get {stock_number} from cached")
         return Result(**cached)
 
     result = downloader.download(stock_number)
