@@ -1,4 +1,3 @@
-import json
 import os
 import logging
 import re
@@ -7,18 +6,10 @@ from typing import Callable, Dict
 
 import requests
 
+from stock_info import Result
 from stock_info.recipe import find_parser, find_request_template
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class Result:
-    success: bool
-    stock_number: str
-    dividend: float
-    exDividendDate: str
-    dividendPaymentDate: str
 
 
 @dataclass
@@ -105,13 +96,17 @@ class Downloader:
                 return fh.read()
 
     def http_request_for(self, stock_number: str):
-        params = create_request_parameters_from_curl_command(
-            find_request_template(stock_number)
-        )
+        template = find_request_template(stock_number)
+        params = create_request_parameters_from_curl_command(template)
+
+        def as_text(response: requests.Response):
+            # force the utf8 encoding
+            return response.content.decode("utf8")
+
         if params.method == "GET":
-            return requests.get(params.url, headers=params.headers).text
+            return as_text(requests.get(params.url, headers=params.headers))
         if params.method == "POST":
-            return requests.post(
-                params.url, data=params.body, headers=params.headers
-            ).text
+            return as_text(
+                requests.post(params.url, data=params.body, headers=params.headers)
+            )
         raise ValueError(f"Unsupported method {params.method}")

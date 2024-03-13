@@ -1,6 +1,7 @@
 import pytest
 
-from stock_info.downloader import Downloader, Result, build_failed_result
+from stock_info.downloader import Downloader, build_failed_result
+from stock_info import Result
 
 
 def test_fetch_0056(downloader: Downloader):

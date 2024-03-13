@@ -1,4 +1,6 @@
 import os
+from dataclasses import dataclass
+from typing import Optional
 
 
 def get_version():
@@ -6,3 +8,13 @@ def get_version():
     with open(version_file) as fh:
         version = fh.read().strip()
         return version
+
+
+@dataclass
+class Result:
+    success: bool
+    stock_number: str
+    dividend: float
+    exDividendDate: str
+    dividendPaymentDate: str
+    meetingDate: Optional[str] = None

@@ -2,9 +2,9 @@ import logging
 from dataclasses import asdict
 from typing import Dict
 
-from stock_info import get_version
+from stock_info import Result, get_version
 from stock_info.cache import Cache
-from stock_info.downloader import Downloader, Result, build_failed_result
+from stock_info.downloader import Downloader, build_failed_result
 
 
 logging.basicConfig(level=logging.INFO)
