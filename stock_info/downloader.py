@@ -49,8 +49,8 @@ def build_failed_result(key: str):
     return Result(
         success=False,
         dividend=0.0,
-        dividendPaymentDate="",
-        exDividendDate="",
+        payment_date="",
+        dividend_date="",
         stock_number=key,
     )
 

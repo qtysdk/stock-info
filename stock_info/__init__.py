@@ -15,9 +15,9 @@ class Result:
     success: bool
     stock_number: str
     dividend: float
-    exDividendDate: str
-    dividendPaymentDate: str
-    meetingDate: Optional[str] = None
+    dividend_date: str
+    payment_date: str
+    meeting_date: Optional[str] = None
     dividend_yield: Optional[float] = None
 
 

@@ -199,8 +199,8 @@ def _parser_yuantafunds(stock_number: str, text: str):
         success=True,
         stock_number=stock_number,
         dividend=data["DIVIDEN_PER_UNIT"],
-        exDividendDate=data["SHARE_DATE"],
-        dividendPaymentDate=data["PAY_DATE"],
+        dividend_date=data["SHARE_DATE"],
+        payment_date=data["PAY_DATE"],
     )
 
 
@@ -232,8 +232,8 @@ def _parser_fubon(stock_number: str, text: str):
         success=True,
         stock_number=stock_number,
         dividend=float(data["每單位分配金額(元)"]),
-        exDividendDate=data["收益分配除息日"],
-        dividendPaymentDate=data["收益分配發放日"],
+        dividend_date=data["收益分配除息日"],
+        payment_date=data["收益分配發放日"],
     )
 
 
@@ -244,8 +244,8 @@ def _parser_cathaysite(stock_number: str, text: str):
         success=True,
         stock_number=stock_number,
         dividend=data["allotMoney"],
-        exDividendDate=data["transDate"],
-        dividendPaymentDate=data["lendingDate"],
+        dividend_date=data["transDate"],
+        payment_date=data["lendingDate"],
     )
 
 
@@ -256,8 +256,8 @@ def _parser_capitalfund(stock_number: str, text: str):
         success=True,
         stock_number=stock_number,
         dividend=float(data["amt"]),
-        exDividendDate=data["interestDate"],
-        dividendPaymentDate=data["assignDate"],
+        dividend_date=data["interestDate"],
+        payment_date=data["assignDate"],
     )
 
 
@@ -268,8 +268,8 @@ def _parser_fhtrust(stock_number: str, text: str):
         success=True,
         stock_number=stock_number,
         dividend=float(data["mDiv"]),
-        exDividendDate=data["divDate"],
-        dividendPaymentDate=data["grantDate"],
+        dividend_date=data["divDate"],
+        payment_date=data["grantDate"],
     )
 
 
@@ -352,9 +352,9 @@ def _parser_goodinfo_StockDividendSchedule(stock_number: str, text: str):
         success=True,
         stock_number=stock_number,
         dividend=data["dividend"],
-        exDividendDate=data["exDividend"],
-        dividendPaymentDate=data["dividendPaymentDate"],
-        meetingDate=data["meetingDate"],
+        dividend_date=data["exDividend"],
+        payment_date=data["dividendPaymentDate"],
+        meeting_date=data["meetingDate"],
     )
 
 
@@ -370,8 +370,8 @@ def _parser_noop(stock_number: str, text: str):
         success=True,
         stock_number=stock_number,
         dividend=0,
-        exDividendDate="noop",
-        dividendPaymentDate="noop",
+        dividend_date="noop",
+        payment_date="noop",
     )
 
 

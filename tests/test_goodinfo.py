@@ -8,9 +8,9 @@ def test_fetch_2412(downloader: Downloader):
         success=True,
         stock_number="2412",
         dividend=4.758,
-        exDividendDate="",
-        dividendPaymentDate="",
-        meetingDate="2024/05/31",
+        dividend_date="",
+        payment_date="",
+        meeting_date="2024/05/31",
         dividend_yield=3.95,
     )
 
@@ -21,8 +21,8 @@ def test_fetch_2330(downloader: Downloader):
         success=True,
         stock_number="2330",
         dividend=3.5,
-        exDividendDate="",
-        dividendPaymentDate="",
-        meetingDate="",
+        dividend_date="",
+        payment_date="",
+        meeting_date="",
         dividend_yield=1.06,
     )

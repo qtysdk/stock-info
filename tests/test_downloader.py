@@ -10,9 +10,9 @@ def test_fetch_0056(downloader: Downloader):
         success=True,
         stock_number="0056",
         dividend=0.7,
-        exDividendDate="2024/01/17",
-        dividendPaymentDate="2024/02/21",
-        meetingDate=None,
+        dividend_date="2024/01/17",
+        payment_date="2024/02/21",
+        meeting_date=None,
         dividend_yield=1.89,
     )
 
@@ -23,9 +23,9 @@ def test_fetch_00713(downloader: Downloader):
         success=True,
         stock_number="00713",
         dividend=0.88,
-        exDividendDate="2024/03/18",
-        dividendPaymentDate=" ",
-        meetingDate=None,
+        dividend_date="2024/03/18",
+        payment_date=" ",
+        meeting_date=None,
         dividend_yield=6.83,
     )
 
@@ -36,9 +36,9 @@ def test_fetch_006208(downloader: Downloader):
         success=True,
         stock_number="006208",
         dividend=0.861,
-        exDividendDate="2023/11/16",
-        dividendPaymentDate="2023/12/12",
-        meetingDate=None,
+        dividend_date="2023/11/16",
+        payment_date="2023/12/12",
+        meeting_date=None,
         dividend_yield=3.08,
     )
 
@@ -49,9 +49,9 @@ def test_fetch_00878(downloader: Downloader):
         success=True,
         stock_number="00878",
         dividend=0.4,
-        exDividendDate="2024/02/27",
-        dividendPaymentDate="2024/03/25",
-        meetingDate=None,
+        dividend_date="2024/02/27",
+        payment_date="2024/03/25",
+        meeting_date=None,
         dividend_yield=1.84,
     )
 
@@ -62,9 +62,9 @@ def test_fetch_00919(downloader: Downloader):
         success=True,
         stock_number="00919",
         dividend=0.55,
-        exDividendDate="2023/12/18",
-        dividendPaymentDate="2024/01/12",
-        meetingDate=None,
+        dividend_date="2023/12/18",
+        payment_date="2024/01/12",
+        meeting_date=None,
         dividend_yield=8.24,
     )
 
@@ -75,9 +75,9 @@ def test_fetch_00929(downloader: Downloader):
         success=True,
         stock_number="00929",
         dividend=0.13,
-        exDividendDate="2024/02/29",
-        dividendPaymentDate="2024/03/26",
-        meetingDate=None,
+        dividend_date="2024/02/29",
+        payment_date="2024/03/26",
+        meeting_date=None,
         dividend_yield=2.04,
     )
 
