@@ -1,5 +1,10 @@
 import json
-from typing import Any, Callable, Dict
+import re
+from typing import Any, Callable, Dict, List
+
+from bs4 import BeautifulSoup
+
+from stock_info import DividendYield, Result
 
 _registered_curl_commands = dict()
 _registered_parsers: Dict[str, Callable[[str, str], Any]] = dict()
@@ -130,13 +135,63 @@ curl 'https://www.fhtrust.com.tw/api/fundDividend?m=fund&fundID=ETF21&sDate={dat
 """
 
 
+def create_goodinfo_template(stock_number: str):
+    # 股利政策
+    if "_yield" in stock_number:
+        stock_id = stock_number.replace("_yield", "")
+        return rf"""
+curl 'https://goodinfo.tw/tw/StockDividendPolicy.asp?STOCK_ID={stock_id}' \
+  -H 'authority: goodinfo.tw' \
+  -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
+  -H 'accept-language: en-US,en;q=0.9,zh-TW;q=0.8,zh-CN;q=0.7,zh;q=0.6' \
+  -H 'cache-control: no-cache' \
+  -H 'cookie: _ga=GA1.1.1493109859.1655977160; CLIENT%5FID=20230908075958144%5F118%2E160%2E128%2E120; IS_TOUCH_DEVICE=F; SCREEN_SIZE=WIDTH=1920&HEIGHT=1080; TW_STOCK_BROWSE_LIST=2412%7C2538; _ga_0LP5MLQS7E=GS1.1.1710387987.7.1.1710388043.4.0.0' \
+  -H 'pragma: no-cache' \
+  -H 'sec-ch-ua: "Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"' \
+  -H 'sec-fetch-dest: document' \
+  -H 'sec-fetch-mode: navigate' \
+  -H 'sec-fetch-site: none' \
+  -H 'sec-fetch-user: ?1' \
+  -H 'upgrade-insecure-requests: 1' \
+  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+        """
+
+    # 除權息日程
+    return rf"""
+curl 'https://goodinfo.tw/tw/StockDividendSchedule.asp?STOCK_ID={stock_number}' \
+  -H 'authority: goodinfo.tw' \
+  -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
+  -H 'accept-language: zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7' \
+  -H 'cache-control: no-cache' \
+  -H 'cookie: CLIENT%5FID=20240217232658953%5F118%2E167%2E157%2E141; _ga=GA1.1.999731202.1708183620; IS_TOUCH_DEVICE=F; SCREEN_SIZE=WIDTH=1920&HEIGHT=1080; TW_STOCK_BROWSE_LIST=2412%7C00878; _ga_0LP5MLQS7E=GS1.1.1710296364.4.1.1710298193.60.0.0' \
+  -H 'pragma: no-cache' \
+  -H 'referer: https://goodinfo.tw/tw/StockDividendPolicy.asp?STOCK_ID={stock_number}' \
+  -H 'sec-ch-ua: "Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"' \
+  -H 'sec-fetch-dest: document' \
+  -H 'sec-fetch-mode: navigate' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'sec-fetch-user: ?1' \
+  -H 'upgrade-insecure-requests: 1' \
+  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+    """
+
+
 def find_request_template(stock_number: str) -> str:
-    return _registered_curl_commands.get(stock_number)
+    if "_yield" in stock_number:
+        return create_goodinfo_template(stock_number)
+
+    template = _registered_curl_commands.get(stock_number)
+    if template is None:
+        if re.match(r"[0-9]+", stock_number):
+            return create_goodinfo_template(stock_number)
+    return template
 
 
 def _parser_yuantafunds(stock_number: str, text: str):
-    from stock_info.downloader import Result
-
     data = json.loads(text)
     data = data["Data"]["Data"][0]
 
@@ -150,8 +205,6 @@ def _parser_yuantafunds(stock_number: str, text: str):
 
 
 def _parser_fubon(stock_number: str, text: str):
-    from bs4 import BeautifulSoup
-    from stock_info.downloader import Result
 
     soup = BeautifulSoup(text, "html.parser")
     rows = soup.select("tr")
@@ -185,8 +238,6 @@ def _parser_fubon(stock_number: str, text: str):
 
 
 def _parser_cathaysite(stock_number: str, text: str):
-    from stock_info.downloader import Result
-
     data = json.loads(text)
     data = data["result"]["fundAllotInfoList"][0]
     return Result(
@@ -199,8 +250,6 @@ def _parser_cathaysite(stock_number: str, text: str):
 
 
 def _parser_capitalfund(stock_number: str, text: str):
-    from stock_info.downloader import Result
-
     data = json.loads(text)
     data = data["data"][0]
     return Result(
@@ -213,8 +262,6 @@ def _parser_capitalfund(stock_number: str, text: str):
 
 
 def _parser_fhtrust(stock_number: str, text: str):
-    from stock_info.downloader import Result
-
     data = json.loads(text)
     data = data["result"][0]["dividend"][0]
     return Result(
@@ -234,16 +281,96 @@ _registered_parsers["00919"] = _parser_capitalfund
 _registered_parsers["00929"] = _parser_fhtrust
 
 
-def find_parser(stock_number: str) -> Callable[[str, str], Any]:
-    def _parser_noop(stock_number: str, text: str):
-        from stock_info.downloader import Result
+def _parser_goodinfo_StockDividendPolicy(stock_number: str, text: str):
+    soup = BeautifulSoup(text, "html.parser")
+    table = soup.select_one("#tblDetail")
+    rows = table.select("tr")
+    row_texts = [[td.text for td in row] for row in rows]
+    row_texts = [r for r in row_texts if r and len(r) == 48]
 
-        return Result(
-            success=True,
-            stock_number=stock_number,
-            dividend=0,
-            exDividendDate="noop",
-            dividendPaymentDate="noop",
+    rate = None
+
+    try:
+        rate = float(row_texts[0][37])
+    except:
+        pass
+
+    if rate is None:
+        try:
+            rate = float(row_texts[1][37])
+        except:
+            pass
+
+    return DividendYield(rate=rate)
+
+
+def _parser_goodinfo_StockDividendSchedule(stock_number: str, text: str):
+    soup = BeautifulSoup(text, "html.parser")
+    table = soup.select_one("#tblDetail")
+    rows = table.select("tr")
+    row_texts = [[td.text for td in row] for row in rows]
+    row_texts = [r for r in row_texts if r and r[0].strip()]
+
+    def to_dict(data: List) -> Dict:
+        # ensure the record having 37 fields
+        assert len(data) == 37
+
+        def fix_date(date_str: str) -> str:
+            import datetime
+
+            if not date_str.strip():
+                return ""
+
+            date_str = date_str.replace("'", "")
+            date_obj = datetime.datetime.strptime(date_str, "%y/%m/%d")
+            return date_obj.strftime("%Y/%m/%d")
+
+        meetingDate = fix_date(data[4])
+        exDividendDate = fix_date(data[6])
+        dividendPaymentDate = fix_date(data[14])
+
+        try:
+            dividend = float(data[-1])
+        except:
+            dividend = None
+
+        return dict(
+            meetingDate=meetingDate,
+            exDividend=exDividendDate,
+            dividend=dividend,
+            dividendPaymentDate=dividendPaymentDate,
         )
+
+    row_texts = [to_dict(r) for r in row_texts]
+    data = row_texts[0]
+
+    return Result(
+        success=True,
+        stock_number=stock_number,
+        dividend=data["dividend"],
+        exDividendDate=data["exDividend"],
+        dividendPaymentDate=data["dividendPaymentDate"],
+        meetingDate=data["meetingDate"],
+    )
+
+
+def _parser_noop(stock_number: str, text: str):
+
+    if "https://goodinfo.tw/tw/StockDividendSchedule.asp" in text:
+        return _parser_goodinfo_StockDividendSchedule(stock_number, text)
+
+    if "https://goodinfo.tw/tw/StockDividendPolicy.asp" in text:
+        return _parser_goodinfo_StockDividendPolicy(stock_number, text)
+
+    return Result(
+        success=True,
+        stock_number=stock_number,
+        dividend=0,
+        exDividendDate="noop",
+        dividendPaymentDate="noop",
+    )
+
+
+def find_parser(stock_number: str) -> Callable[[str, str], Any]:
 
     return _registered_parsers.get(stock_number, _parser_noop)
