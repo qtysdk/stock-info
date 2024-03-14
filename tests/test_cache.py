@@ -19,3 +19,9 @@ def test_cached_downloading():
 
     result = download_or_get_from_cache("00878")
     assert result is not None
+
+
+def test_cache_delete_item(cache: Cache):
+    cache.delete_item("2887")
+    cache.delete_item("2887_yield")
+    cache.delete_item("2887_yield_not_such_key")

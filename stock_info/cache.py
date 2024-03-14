@@ -40,3 +40,7 @@ class Cache:
             return None
 
         return json.loads(item["data"])
+
+    def delete_item(self, stock_number: str):
+        response = self.table.delete_item(Key={"stock_number": stock_number})
+        return response
