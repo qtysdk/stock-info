@@ -321,7 +321,10 @@ def _parser_goodinfo_StockDividendSchedule(stock_number: str, text: str):
             if not date_str.strip():
                 return ""
 
-            date_str = date_str.replace("'", "")
+            # remove special and non-date info
+            # eg. 24/04/11即將發放
+            # eg. 24/04/11即狀除息
+            date_str = re.sub(r"[^0-9/]", "", date_str)
             date_obj = datetime.datetime.strptime(date_str, "%y/%m/%d")
             return date_obj.strftime("%Y/%m/%d")
 
@@ -330,7 +333,8 @@ def _parser_goodinfo_StockDividendSchedule(stock_number: str, text: str):
         dividendPaymentDate = fix_date(data[14])
 
         try:
-            dividend = float(data[-1])
+            # 只取現金股利，不要用合理股利。
+            dividend = float(data[28])
         except:
             dividend = None
 
