@@ -11,4 +11,5 @@ def test_fetch_2412(downloader: Downloader):
         exDividendDate="",
         dividendPaymentDate="",
         meetingDate="2024/05/31",
+        dividend_yield=3.95,
     )

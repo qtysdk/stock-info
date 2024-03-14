@@ -18,3 +18,9 @@ class Result:
     exDividendDate: str
     dividendPaymentDate: str
     meetingDate: Optional[str] = None
+    dividend_yield: Optional[float] = None
+
+
+@dataclass
+class DividendYield:
+    rate: float

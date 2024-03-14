@@ -6,7 +6,7 @@ from typing import Callable, Dict
 
 import requests
 
-from stock_info import Result
+from stock_info import DividendYield, Result
 from stock_info.recipe import find_parser, find_request_template
 
 logger = logging.getLogger(__name__)
@@ -62,6 +62,17 @@ class Downloader:
         logger.info(f"is-fake-enabled: {self.enable_fake}")
 
     def download(self, key: str) -> Result:
+        result = self.exec_download(key)
+        try:
+            result_yield = self.exec_download(f"{key}_yield")
+            if result_yield and isinstance(result_yield, DividendYield):
+                result.dividend_yield = result_yield.rate
+        except BaseException as e:
+            print(e)
+
+        return result
+
+    def exec_download(self, key: str) -> Result:
         text = None
         if self.enable_fake:
             text = self.use_previous_data(key)

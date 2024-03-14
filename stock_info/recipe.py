@@ -2,7 +2,9 @@ import json
 import re
 from typing import Any, Callable, Dict, List
 
-from stock_info import Result
+from bs4 import BeautifulSoup
+
+from stock_info import DividendYield, Result
 
 _registered_curl_commands = dict()
 _registered_parsers: Dict[str, Callable[[str, str], Any]] = dict()
@@ -134,7 +136,30 @@ curl 'https://www.fhtrust.com.tw/api/fundDividend?m=fund&fundID=ETF21&sDate={dat
 
 
 def create_goodinfo_template(stock_number: str):
-    template = rf"""
+    # 股利政策
+    if "_yield" in stock_number:
+        stock_id = stock_number.replace("_yield", "")
+        return rf"""
+curl 'https://goodinfo.tw/tw/StockDividendPolicy.asp?STOCK_ID={stock_id}' \
+  -H 'authority: goodinfo.tw' \
+  -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
+  -H 'accept-language: en-US,en;q=0.9,zh-TW;q=0.8,zh-CN;q=0.7,zh;q=0.6' \
+  -H 'cache-control: no-cache' \
+  -H 'cookie: _ga=GA1.1.1493109859.1655977160; CLIENT%5FID=20230908075958144%5F118%2E160%2E128%2E120; IS_TOUCH_DEVICE=F; SCREEN_SIZE=WIDTH=1920&HEIGHT=1080; TW_STOCK_BROWSE_LIST=2412%7C2538; _ga_0LP5MLQS7E=GS1.1.1710387987.7.1.1710388043.4.0.0' \
+  -H 'pragma: no-cache' \
+  -H 'sec-ch-ua: "Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "macOS"' \
+  -H 'sec-fetch-dest: document' \
+  -H 'sec-fetch-mode: navigate' \
+  -H 'sec-fetch-site: none' \
+  -H 'sec-fetch-user: ?1' \
+  -H 'upgrade-insecure-requests: 1' \
+  -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+        """
+
+    # 除權息日程
+    return rf"""
 curl 'https://goodinfo.tw/tw/StockDividendSchedule.asp?STOCK_ID={stock_number}' \
   -H 'authority: goodinfo.tw' \
   -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
@@ -153,10 +178,12 @@ curl 'https://goodinfo.tw/tw/StockDividendSchedule.asp?STOCK_ID={stock_number}' 
   -H 'upgrade-insecure-requests: 1' \
   -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
     """
-    return template
 
 
 def find_request_template(stock_number: str) -> str:
+    if "_yield" in stock_number:
+        return create_goodinfo_template(stock_number)
+
     template = _registered_curl_commands.get(stock_number)
     if template is None:
         if re.match(r"[0-9]+", stock_number):
@@ -178,7 +205,6 @@ def _parser_yuantafunds(stock_number: str, text: str):
 
 
 def _parser_fubon(stock_number: str, text: str):
-    from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(text, "html.parser")
     rows = soup.select("tr")
@@ -255,9 +281,30 @@ _registered_parsers["00919"] = _parser_capitalfund
 _registered_parsers["00929"] = _parser_fhtrust
 
 
-def _parser_goodinfo_StockDividendSchedule(stock_number: str, text: str):
-    from bs4 import BeautifulSoup
+def _parser_goodinfo_StockDividendPolicy(stock_number: str, text: str):
+    soup = BeautifulSoup(text, "html.parser")
+    table = soup.select_one("#tblDetail")
+    rows = table.select("tr")
+    row_texts = [[td.text for td in row] for row in rows]
+    row_texts = [r for r in row_texts if r and len(r) == 48]
 
+    rate = None
+
+    try:
+        rate = float(row_texts[0][37])
+    except:
+        pass
+
+    if rate is None:
+        try:
+            rate = float(row_texts[1][37])
+        except:
+            pass
+
+    return DividendYield(rate=rate)
+
+
+def _parser_goodinfo_StockDividendSchedule(stock_number: str, text: str):
     soup = BeautifulSoup(text, "html.parser")
     table = soup.select_one("#tblDetail")
     rows = table.select("tr")
@@ -311,6 +358,9 @@ def _parser_noop(stock_number: str, text: str):
 
     if "https://goodinfo.tw/tw/StockDividendSchedule.asp" in text:
         return _parser_goodinfo_StockDividendSchedule(stock_number, text)
+
+    if "https://goodinfo.tw/tw/StockDividendPolicy.asp" in text:
+        return _parser_goodinfo_StockDividendPolicy(stock_number, text)
 
     return Result(
         success=True,
