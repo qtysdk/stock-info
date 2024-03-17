@@ -1,6 +1,8 @@
 ## Stock info
 
-This project is a mini-project designed to collect stock information from listed companies in Taiwan, focusing primarily on the schedule of stock dividends and distributions. It utilizes a serverless approach, providing functions for use by other services.
+This project is a mini-project designed to collect stock information from listed companies in Taiwan, focusing primarily
+on the schedule of stock dividends and distributions. It utilizes a serverless approach, providing functions for use by
+other services.
 
 ## Usage
 
@@ -29,3 +31,17 @@ aws lambda invoke \
   }
 }
 ```
+
+### result 欄位說明
+
+| 欄位名稱           | 欄位說明             | 內容範例       |
+|----------------|------------------|------------|
+| success        | 查詢是否成功           | true       |
+| stock_number   | 股票代號             | 0056       |
+| dividend       | 股息               | 0.7        |
+| dividend_date  | 除息日              | 2024/01/17 |
+| payment_date   | 發放股息日            | 2024/02/21 |
+| meeting_date   | 股東會日期（若無則為 null） | null       |
+| dividend_yield | 股息殖利率            | 1.89       |
+
+* success 為 `true` 時，其它值才有意義。當為 `false` 時，請忽略其它欄位內容。
