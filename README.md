@@ -1,8 +1,9 @@
 ## Stock info
 
-This project is a focused initiative aimed at gathering stock information from publicly traded companies in Taiwan. It zeroes in on the critical aspects of stock dividends and distributions schedules, offering valuable insights for stakeholders. By adopting a serverless architecture, the project ensures scalability and flexibility, enabling seamless integration and utilization by various services.
+This project is a mini-project designed to collect stock information from listed companies in Taiwan, 
+focusing primarily on the schedule of stock dividends and distributions. It utilizes a serverless approach, providing functions for use by other services.
 
-這個專案是一項專注於搜集台灣上市公司股票資訊的計劃，主要集中於股息和分配時間表的關鍵細節。透過提供這些重要資訊，專案為相關利益者提供了寶貴的洞見。採用無伺服器架構確保了專案的可擴展性和靈活性，使其能夠輕鬆整合並被各種服務使用。
+這個專案是一項專注於搜集台灣上市公司股票資訊的工具。主要集中於股息和分配時間表的資料蒐集。採用無伺服器架構確保了專案的可擴展性和靈活性，使其能夠輕鬆整合並被各種服務使用。
 
 ## Usage
 
