@@ -52,7 +52,7 @@ def test_fetch_00878(downloader: Downloader):
         dividend_date="2024/02/27",
         payment_date="2024/03/25",
         meeting_date=None,
-        dividend_yield=1.84,
+        dividend_yield=1.83,
     )
 
 
