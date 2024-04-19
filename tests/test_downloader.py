@@ -61,11 +61,11 @@ def test_fetch_00919(downloader: Downloader):
     assert result == Result(
         success=True,
         stock_number="00919",
-        dividend=0.55,
-        dividend_date="2023/12/18",
-        payment_date="2024/01/12",
+        dividend=0.66,
+        dividend_date="2024/03/18",
+        payment_date="2024/04/15",
         meeting_date=None,
-        dividend_yield=8.24,
+        dividend_yield=2.76,
     )
 
 
