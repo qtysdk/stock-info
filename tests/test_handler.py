@@ -11,11 +11,11 @@ def test_handler_00878(downloader: Downloader):
     result = stock_info.handler.callback(dict(stock_number="00878"), None)
     assert result == {
         "result": {
-            "dividend": 0.4,
-            "dividend_date": "2024/02/27",
-            "dividend_yield": 1.82,
+            "dividend": 0.55,
+            "dividend_date": "2024/08/16",
+            "dividend_yield": 6.44,
             "meeting_date": None,
-            "payment_date": "2024/03/25",
+            "payment_date": "2024/09/11",
             "stock_number": "00878",
             "success": True,
         },
