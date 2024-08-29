@@ -312,8 +312,9 @@ def _parser_goodinfo_StockDividendSchedule(stock_number: str, text: str):
     row_texts = [r for r in row_texts if r and r[0].strip()]
 
     def to_dict(data: List) -> Dict:
-        # ensure the record having 37 fields
-        assert len(data) == 37
+        # ensure the record having 19 fields
+        if len(data) != 19:
+            return None
 
         def fix_date(date_str: str) -> str:
             import datetime
@@ -328,13 +329,13 @@ def _parser_goodinfo_StockDividendSchedule(stock_number: str, text: str):
             date_obj = datetime.datetime.strptime(date_str, "%y/%m/%d")
             return date_obj.strftime("%Y/%m/%d")
 
-        meetingDate = fix_date(data[4])
-        exDividendDate = fix_date(data[6])
-        dividendPaymentDate = fix_date(data[14])
+        meetingDate = fix_date(data[2])
+        exDividendDate = fix_date(data[3])
+        dividendPaymentDate = fix_date(data[7])
 
         try:
             # 只取現金股利，不要用合理股利。
-            dividend = float(data[28])
+            dividend = float(data[14])
         except:
             dividend = None
 
@@ -346,6 +347,7 @@ def _parser_goodinfo_StockDividendSchedule(stock_number: str, text: str):
         )
 
     row_texts = [to_dict(r) for r in row_texts]
+    row_texts = [r for r in row_texts if r]
     data = row_texts[0]
 
     return Result(
