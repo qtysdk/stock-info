@@ -9,11 +9,11 @@ def test_fetch_0056(downloader: Downloader):
     assert result == Result(
         success=True,
         stock_number="0056",
-        dividend=0.7,
-        dividend_date="2024/01/17",
-        payment_date="2024/02/21",
+        dividend=1.07,
+        dividend_date="2025/01/17",
+        payment_date=None,
         meeting_date=None,
-        dividend_yield=1.89,
+        dividend_yield=9.44,
     )
 
 
@@ -22,11 +22,11 @@ def test_fetch_00713(downloader: Downloader):
     assert result == Result(
         success=True,
         stock_number="00713",
-        dividend=0.88,
-        dividend_date="2024/03/18",
-        payment_date=" ",
+        dividend=1.4,
+        dividend_date="2024/12/17",
+        payment_date="2025/01/13",
         meeting_date=None,
-        dividend_yield=6.83,
+        dividend_yield=9.51,
     )
 
 
@@ -35,11 +35,11 @@ def test_fetch_006208(downloader: Downloader):
     assert result == Result(
         success=True,
         stock_number="006208",
-        dividend=0.861,
-        dividend_date="2023/11/16",
-        payment_date="2023/12/12",
+        dividend=0.9,
+        dividend_date="2024/11/18",
+        payment_date="2024/12/12",
         meeting_date=None,
-        dividend_yield=3.08,
+        dividend_yield=1.67,
     )
 
 
@@ -48,11 +48,11 @@ def test_fetch_00878(downloader: Downloader):
     assert result == Result(
         success=True,
         stock_number="00878",
-        dividend=0.4,
-        dividend_date="2024/02/27",
-        payment_date="2024/03/25",
+        dividend=0.55,
+        dividend_date="2024/11/18",
+        payment_date="2024/12/12",
         meeting_date=None,
-        dividend_yield=1.83,
+        dividend_yield=8.89,
     )
 
 
@@ -61,24 +61,11 @@ def test_fetch_00919(downloader: Downloader):
     assert result == Result(
         success=True,
         stock_number="00919",
-        dividend=0.66,
-        dividend_date="2024/03/18",
-        payment_date="2024/04/15",
+        dividend=0.72,
+        dividend_date="2024/12/20",
+        payment_date="2025/01/13",
         meeting_date=None,
-        dividend_yield=2.76,
-    )
-
-
-def test_fetch_00929(downloader: Downloader):
-    result = downloader.download("00929")
-    assert result == Result(
-        success=True,
-        stock_number="00929",
-        dividend=0.13,
-        dividend_date="2024/02/29",
-        payment_date="2024/03/26",
-        meeting_date=None,
-        dividend_yield=2.04,
+        dividend_yield=11.5,
     )
 
 

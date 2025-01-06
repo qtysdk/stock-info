@@ -12,10 +12,10 @@ def test_handler_00878(downloader: Downloader):
     assert result == {
         "result": {
             "dividend": 0.55,
-            "dividend_date": "2024/08/16",
-            "dividend_yield": 6.44,
+            "dividend_date": "2024/11/18",
+            "dividend_yield": 8.89,
             "meeting_date": None,
-            "payment_date": "2024/09/11",
+            "payment_date": "2024/12/12",
             "stock_number": "00878",
             "success": True,
         },

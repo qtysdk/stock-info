@@ -286,18 +286,18 @@ def _parser_goodinfo_StockDividendPolicy(stock_number: str, text: str):
     table = soup.select_one("#tblDetail")
     rows = table.select("tr")
     row_texts = [[td.text for td in row] for row in rows]
-    row_texts = [r for r in row_texts if r and len(r) == 48]
+    row_texts = [r for r in row_texts if r and len(r) == 24]
 
     rate = None
 
     try:
-        rate = float(row_texts[0][37])
+        rate = float(row_texts[0][14])
     except:
         pass
 
     if rate is None:
         try:
-            rate = float(row_texts[1][37])
+            rate = float(row_texts[1][14])
         except:
             pass
 
