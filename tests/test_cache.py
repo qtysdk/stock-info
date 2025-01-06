@@ -22,6 +22,22 @@ def test_cached_downloading():
 
 
 def test_cache_delete_item(cache: Cache):
-    cache.delete_item("2887")
-    cache.delete_item("2887_yield")
-    cache.delete_item("2887_yield_not_such_key")
+    numbers = [
+        "0056",
+        "006208",
+        "00631L",
+        "00713",
+        "00878",
+        "00919",
+        "1513",
+        "2330",
+        "2412",
+        "2880",
+        "2887",
+        "2890",
+        "2892",
+    ]
+    for number in numbers:
+        cache.delete_item(number)
+        cache.delete_item(f"{number}_yield")
+        cache.delete_item(f"{number}_yield_not_such_key")
