@@ -11,9 +11,9 @@ def test_fetch_0056(downloader: Downloader):
         stock_number="0056",
         dividend=1.07,
         dividend_date="2025/01/17",
-        payment_date=None,
+        payment_date="2025/02/20",
         meeting_date=None,
-        dividend_yield=9.44,
+        dividend_yield=2.95,
     )
 
 
